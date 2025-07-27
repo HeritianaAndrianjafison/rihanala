@@ -88,24 +88,20 @@
 		});
 		$('.carousel-testimony').owlCarousel({
 			autoplay: true,
+			autoplayTimeout: 60000, // 8s entre chaque slide     // animation lente
 			loop: true,
-			items:1,
+			items: 1,
 			margin: 0,
 			stagePadding: 0,
 			nav: false,
 			navText: ['<span class="ion-ios-arrow-back">', '<span class="ion-ios-arrow-forward">'],
-			responsive:{
-				0:{
-					items: 1
-				},
-				600:{
-					items: 1
-				},
-				1000:{
-					items: 1
-				}
+			responsive: {
+				0: { items: 1 },
+				600: { items: 1 },
+				1000: { items: 1 }
 			}
 		});
+
 
 		$('.single-slider').owlCarousel({
 			animateOut: 'fadeOut',
