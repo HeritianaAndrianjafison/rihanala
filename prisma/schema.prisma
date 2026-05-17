@@ -1,0 +1,390 @@
+generator client {
+  provider   = "prisma-client-js"
+  engineType = "binary"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── HÉBERGEMENTS ─────────────────────────────────────────────────────────────
+
+model Hebergement {
+  id            String          @id @default(cuid())
+  slug          String          @unique
+  type          HebergementType
+  nom           String
+  nomEn         String
+  description   String          @db.Text
+  descriptionEn String          @db.Text
+  capacite      Int
+  superficie    Float?
+  prixBase      Float
+  prixWeekend   Float?
+  estActif      Boolean         @default(true)
+  estEnVedette  Boolean         @default(false)
+  ordre         Int             @default(0)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  photos       Photo[]
+  equipements  Equipement[]
+  reservations Reservation[]
+
+  @@index([slug])
+  @@index([type, estActif])
+  @@map("hebergements")
+}
+
+enum HebergementType {
+  CHAMBRE_DOUBLE
+  CHAMBRE_FAMILIALE
+  SUITE
+  DORTOIR
+}
+
+model Equipement {
+  id            String      @id @default(cuid())
+  nom           String
+  icone         String?
+  hebergementId String
+  hebergement   Hebergement @relation(fields: [hebergementId], references: [id], onDelete: Cascade)
+
+  @@map("equipements")
+}
+
+// ─── MÉDIAS ───────────────────────────────────────────────────────────────────
+
+model Photo {
+  id            String         @id @default(cuid())
+  url           String
+  urlOptimisee  String?
+  altFr         String
+  altEn         String
+  titre         String?
+  ordre         Int            @default(0)
+  estCouverture Boolean        @default(false)
+  categorie     PhotoCategorie @default(HEBERGEMENT)
+  createdAt     DateTime       @default(now())
+
+  hebergementId String?
+  hebergement   Hebergement? @relation(fields: [hebergementId], references: [id], onDelete: SetNull)
+  actualiteId   String?
+  actualite     Actualite?   @relation(fields: [actualiteId], references: [id], onDelete: SetNull)
+
+  @@index([categorie])
+  @@index([hebergementId])
+  @@map("photos")
+}
+
+enum PhotoCategorie {
+  HEBERGEMENT
+  RESTAURANT
+  SALLE_REUNION
+  EXTERIEURS
+  ACTIVITES
+  ACTUALITE
+}
+
+// ─── ACTUALITÉS / BLOG ────────────────────────────────────────────────────────
+
+model Actualite {
+  id          String   @id @default(cuid())
+  slug        String   @unique
+  titre       String
+  titreEn     String
+  resume      String   @db.VarChar(300)
+  resumeEn    String   @db.VarChar(300)
+  contenu     String   @db.Text
+  contenuEn   String   @db.Text
+  imageUrl    String?
+  imageAlt    String?
+  estPublie   Boolean  @default(false)
+  estEnVedette Boolean @default(false)
+  tags        String[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  publieLe    DateTime @default(now())
+
+  photos   Photo[]
+  auteurId String
+  auteur   Utilisateur @relation(fields: [auteurId], references: [id])
+
+  @@index([slug])
+  @@index([estPublie, publieLe])
+  @@map("actualites")
+}
+
+// ─── RÉSERVATIONS ─────────────────────────────────────────────────────────────
+
+model Reservation {
+  id             String            @id @default(cuid())
+  reference      String            @unique @default(cuid())
+  prenom         String
+  nom            String
+  email          String
+  telephone      String
+  dateArrivee    DateTime
+  dateDepart     DateTime
+  nbAdultes      Int               @default(1)
+  nbEnfants      Int               @default(0)
+  messageSpecial String?           @db.Text
+  statut         StatutReservation @default(EN_ATTENTE)
+  prixTotal      Float?
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  hebergementId String
+  hebergement   Hebergement @relation(fields: [hebergementId], references: [id])
+
+  @@index([statut, createdAt])
+  @@index([email])
+  @@map("reservations")
+}
+
+enum StatutReservation {
+  EN_ATTENTE
+  CONFIRMEE
+  ANNULEE
+  TERMINEE
+}
+
+// ─── AVIS / TÉMOIGNAGES ───────────────────────────────────────────────────────
+
+model Avis {
+  id          String   @id @default(cuid())
+  auteurNom   String
+  auteurPays  String   @default("Madagascar")
+  note        Int
+  commentaire String   @db.Text
+  reponse     String?  @db.Text
+  estApprouve Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([estApprouve, note])
+  @@map("avis")
+}
+
+// ─── OFFRES SPÉCIALES ─────────────────────────────────────────────────────────
+
+model OffreSpeciale {
+  id          String   @id @default(cuid())
+  titre       String
+  titreEn     String
+  description String   @db.Text
+  reduction   Float
+  dateDebut   DateTime
+  dateFin     DateTime
+  code        String?  @unique
+  estActif    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@index([estActif, dateFin])
+  @@map("offres_speciales")
+}
+
+// ─── UTILISATEURS ADMIN ───────────────────────────────────────────────────────
+
+model Utilisateur {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  nom          String
+  motDePasse   String?
+  role         Role     @default(EDITEUR)
+  image        String?
+  createdAt    DateTime @default(now())
+
+  actualites Actualite[]
+  comptes    Compte[]
+
+  @@map("utilisateurs")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  EDITEUR
+}
+
+model Compte {
+  id                String  @id @default(cuid())
+  utilisateurId     String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+
+  utilisateur Utilisateur @relation(fields: [utilisateurId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("comptes")
+}
+
+model Session {
+  id           String      @id @default(cuid())
+  sessionToken String      @unique
+  userId       String
+  expires      DateTime
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── AHF — ASSOCIATION DES HÔTELS DE FOULPOINTE ──────────────────────────────
+
+model HotelAHF {
+  id               String   @id @default(cuid())
+  slug             String   @unique
+  nom              String
+  description      String   @db.Text
+  adresse          String?
+  telephone        String?
+  email            String?
+  siteWeb          String?
+  facebook         String?
+  instagram        String?
+  latitude         Float?
+  longitude        Float?
+  photoCouverture  String?
+  photos           String[]
+  estActif         Boolean  @default(true)
+  ordre            Int      @default(0)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([slug])
+  @@index([estActif])
+  @@map("hotels_ahf")
+}
+
+// ─── CARTES DE RÉDUCTION ──────────────────────────────────────────────────────
+
+model CarteReduction {
+  id              String    @id @default(cuid())
+  code            String    @unique               // 8 chars uppercase eg. "RFKM8T2P"
+  pourcentage     Float                           // ex: 5, 10, 25
+  estUtilise      Boolean   @default(false)
+  utiliseAt       DateTime?
+  montantOriginal Float?
+  montantFinal    Float?
+  note            String?
+  createdAt       DateTime  @default(now())
+
+  @@index([code])
+  @@index([estUtilise])
+  @@map("cartes_reduction")
+}
+
+// ─── PARAMÈTRES GLOBAUX ───────────────────────────────────────────────────────
+
+model Parametre {
+  cle    String @id
+  valeur String @db.Text
+  type   String @default("string")
+
+  @@map("parametres")
+}
+
+// ─── PROGRAMME DE FIDÉLITÉ ────────────────────────────────────────────────────
+
+model FideliteConfig {
+  id                  String   @id @default("config_fidelite")
+  estActif            Boolean  @default(true)
+  valeurPoint         Float    @default(50000)   // AR requis pour gagner 1 point
+  seuilConversion     Int      @default(100)     // points pour déclencher 1 récompense
+  valeurRecompense    Float    @default(100000)  // AR crédités en cagnotte
+  seuilMinUtilisation Float    @default(50000)   // AR min pour utiliser la cagnotte
+  updatedAt           DateTime @updatedAt
+
+  @@map("fidelite_config")
+}
+
+model ClientFidelite {
+  id            String    @id @default(cuid())
+  nom           String
+  prenom        String
+  telephone     String    @unique
+  email         String?
+  dateNaissance DateTime?
+  pointsActuels Int       @default(0)
+  pointsCumules Int       @default(0)
+  cagnotte      Float     @default(0)
+  estActif      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  cartes       CarteQR[]
+  transactions TransactionFidelite[]
+  conversions  ConversionPalier[]
+  utilisations UtilisationCagnotte[]
+
+  @@index([telephone])
+  @@map("clients_fidelite")
+}
+
+model CarteQR {
+  id        String          @id @default(cuid())
+  codeQR    String          @unique @default(cuid())
+  estActif  Boolean         @default(true)
+  createdAt DateTime        @default(now())
+
+  clientId  String?
+  client    ClientFidelite? @relation(fields: [clientId], references: [id])
+
+  @@index([codeQR])
+  @@map("cartes_qr")
+}
+
+model TransactionFidelite {
+  id             String         @id @default(cuid())
+  montantDepense Float
+  pointsGagnes   Int
+  categorie      String?
+  note           String?
+  createdAt      DateTime       @default(now())
+
+  clientId String
+  client   ClientFidelite @relation(fields: [clientId], references: [id])
+
+  @@index([clientId, createdAt])
+  @@map("transactions_fidelite")
+}
+
+model ConversionPalier {
+  id             String         @id @default(cuid())
+  pointsUtilises Int
+  montantCredite Float
+  createdAt      DateTime       @default(now())
+
+  clientId String
+  client   ClientFidelite @relation(fields: [clientId], references: [id])
+
+  @@index([clientId])
+  @@map("conversions_palier")
+}
+
+model UtilisationCagnotte {
+  id             String         @id @default(cuid())
+  montantUtilise Float
+  description    String?
+  createdAt      DateTime       @default(now())
+
+  clientId String
+  client   ClientFidelite @relation(fields: [clientId], references: [id])
+
+  @@index([clientId])
+  @@map("utilisations_cagnotte")
+}
