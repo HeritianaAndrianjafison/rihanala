@@ -248,13 +248,20 @@ export default function ImprimerCartesPage() {
 
         /* ── Print: hide everything, show only print zone ── */
         @media print {
+          body {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+          }
           body * { visibility: hidden !important; }
           #print-zone, #print-zone * { visibility: visible !important; }
           #print-zone {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
+            right: 0;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
           }
           .loyalty-card {
             box-shadow: none;
