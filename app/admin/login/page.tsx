@@ -2,11 +2,9 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 
 export default function AdminLoginPage() {
-  const router = useRouter();
   const [email, setEmail]       = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
@@ -29,8 +27,7 @@ export default function AdminLoginPage() {
     if (result?.error) {
       setError("Email ou mot de passe incorrect.");
     } else {
-      router.push("/admin");
-      router.refresh();
+      window.location.href = "/admin";
     }
   }
 
