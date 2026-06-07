@@ -100,7 +100,7 @@ export default function ImprimerCartesPage() {
     });
   };
 
-  // ── PDF generation via html2canvas (captures exactly what's on screen) ──
+  // ── PDF generation — clone hors transform pour capture propre ────────────
   const handleDownloadPDF = async () => {
     if (printCartes.length === 0) return;
     setDownloading(true);
@@ -115,15 +115,29 @@ export default function ImprimerCartesPage() {
         const el = pagesRef.current[i];
         if (!el) continue;
 
-        // Capture the A4 div at its natural (un-scaled) size
-        const canvas = await html2canvas(el, {
-          scale: 2,           // 2× for crisp text and QR codes
-          useCORS: true,
+        // Clone l'élément A4 directement dans <body>, sans aucun parent transformé.
+        // html2canvas échoue à localiser correctement les éléments à l'intérieur
+        // d'un parent avec transform: scale() — le clone évite ce problème.
+        const clone = el.cloneNode(true) as HTMLElement;
+        clone.style.position  = "fixed";
+        clone.style.top       = "0";
+        clone.style.left      = "0";
+        clone.style.zIndex    = "-9999";
+        clone.style.width     = `${el.offsetWidth}px`;
+        clone.style.height    = `${el.offsetHeight}px`;
+        clone.style.transform = "none";
+        document.body.appendChild(clone);
+
+        const canvas = await html2canvas(clone, {
+          scale:           2,
+          useCORS:         true,
           backgroundColor: "#ffffff",
-          logging: false,
-          width:  el.offsetWidth,
-          height: el.offsetHeight,
+          logging:         false,
+          width:           el.offsetWidth,
+          height:          el.offsetHeight,
         });
+
+        document.body.removeChild(clone);
 
         if (i > 0) pdf.addPage("a4", "portrait");
         pdf.addImage(canvas.toDataURL("image/jpeg", 0.93), "JPEG", 0, 0, 210, 297);
