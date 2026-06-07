@@ -89,22 +89,26 @@ export default function ImprimerCartesPage() {
     <>
       {/* ── Print CSS ────────────────────────────────────────────────────────── */}
       <style dangerouslySetInnerHTML={{ __html: `
-        @page { size: A4 portrait; margin: 10mm; }
+        /* ── ISO/IEC 7810 ID-1 : 85.6 × 54 mm ── */
+        /* A4 portrait 210×297mm, marges 5mm → zone utile 200×287mm */
+        /* 2 col × 5 lignes = 10 cartes/page                        */
+        /* 2×85.6 + 1×5mm gap col = 176.2mm ✓                      */
+        /* 5×54  + 4×3mm gap lig  = 282mm  ✓                        */
 
-        /* Screen: card grid */
+        @page { size: A4 portrait; margin: 5mm; }
+
         .carte-grid {
           display: grid;
-          grid-template-columns: repeat(2, 85mm);
-          gap: 5mm;
+          grid-template-columns: repeat(2, 85.6mm);
+          gap: 3mm 5mm;
           justify-content: start;
         }
 
-        /* Card base */
         .loyalty-card {
-          width: 85mm;
-          height: 52mm;
-          background: #1B4D3E;
-          border-radius: 3mm;
+          width: 85.6mm;
+          height: 54mm;
+          background: linear-gradient(135deg, #1B4D3E 0%, #163d31 100%);
+          border-radius: 3.18mm; /* rayon réel d'une carte bancaire */
           display: flex;
           flex-direction: column;
           overflow: hidden;
@@ -112,18 +116,29 @@ export default function ImprimerCartesPage() {
           page-break-inside: avoid;
           position: relative;
           font-family: 'Inter', sans-serif;
+          box-shadow: 0 1mm 3mm rgba(0,0,0,0.25);
         }
+
+        /* Bande dorée décorative haut */
+        .loyalty-card::before {
+          content: '';
+          position: absolute;
+          top: 0; left: 0; right: 0;
+          height: 0.8mm;
+          background: linear-gradient(90deg, #A88A4E, #C8A96E, #E2C98E, #C8A96E, #A88A4E);
+        }
+
         .loyalty-card__header {
-          padding: 3mm 4mm 2.5mm;
+          padding: 3.5mm 4mm 2.5mm;
           display: flex;
           align-items: center;
-          gap: 2mm;
-          border-bottom: 0.3mm solid rgba(200,169,110,0.25);
+          gap: 2.5mm;
+          border-bottom: 0.3mm solid rgba(200,169,110,0.22);
         }
         .loyalty-card__logo {
-          width: 7mm;
-          height: 7mm;
-          background: #C8A96E;
+          width: 8mm;
+          height: 8mm;
+          background: linear-gradient(135deg, #C8A96E, #E2C98E);
           border-radius: 1.5mm;
           display: flex;
           align-items: center;
@@ -132,40 +147,41 @@ export default function ImprimerCartesPage() {
         }
         .loyalty-card__logo-letter {
           color: #0F1F17;
-          font-size: 5pt;
+          font-size: 5.5pt;
           font-weight: 800;
           line-height: 1;
         }
         .loyalty-card__titles {
           display: flex;
           flex-direction: column;
-          gap: 0.3mm;
+          gap: 0.5mm;
         }
         .loyalty-card__brand {
           color: #C8A96E;
-          font-size: 5.5pt;
+          font-size: 6pt;
           font-weight: 700;
           letter-spacing: 0.8pt;
           text-transform: uppercase;
           line-height: 1;
         }
         .loyalty-card__sub {
-          color: rgba(255,255,255,0.50);
-          font-size: 3.5pt;
+          color: rgba(255,255,255,0.45);
+          font-size: 3.8pt;
           letter-spacing: 0.2pt;
           line-height: 1;
         }
+
         .loyalty-card__body {
           flex: 1;
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 4mm;
+          gap: 4.5mm;
           padding: 2mm 4mm;
         }
         .loyalty-card__qr-wrap {
-          width: 30mm;
-          height: 30mm;
+          width: 28mm;
+          height: 28mm;
           background: white;
           border-radius: 1.5mm;
           padding: 1mm;
@@ -182,38 +198,52 @@ export default function ImprimerCartesPage() {
         .loyalty-card__info {
           display: flex;
           flex-direction: column;
-          gap: 1.5mm;
+          gap: 1.8mm;
         }
         .loyalty-card__info-line {
           color: rgba(255,255,255,0.65);
-          font-size: 3.8pt;
+          font-size: 4pt;
           line-height: 1.4;
         }
         .loyalty-card__info-line strong {
           color: #C8A96E;
-          font-weight: 600;
+          font-weight: 700;
         }
+
         .loyalty-card__footer {
           padding: 1.5mm 4mm 2mm;
-          background: rgba(0,0,0,0.30);
+          background: rgba(0,0,0,0.28);
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 2mm;
+        }
+        .loyalty-card__code-block {
           display: flex;
           flex-direction: column;
-          gap: 0.5mm;
+          gap: 0.4mm;
         }
         .loyalty-card__code-label {
-          color: rgba(255,255,255,0.35);
+          color: rgba(255,255,255,0.30);
           font-size: 2.8pt;
-          letter-spacing: 0.4pt;
+          letter-spacing: 0.5pt;
           text-transform: uppercase;
           line-height: 1;
         }
         .loyalty-card__code {
-          color: rgba(255,255,255,0.80);
-          font-size: 3.8pt;
+          color: rgba(255,255,255,0.82);
+          font-size: 4pt;
           font-family: 'Courier New', Courier, monospace;
-          letter-spacing: 0.8pt;
+          letter-spacing: 0.6pt;
           line-height: 1;
-          word-spacing: 1pt;
+        }
+        .loyalty-card__chip {
+          width: 6mm;
+          height: 4.5mm;
+          background: linear-gradient(135deg, #C8A96E 0%, #E2C98E 50%, #C8A96E 100%);
+          border-radius: 0.8mm;
+          flex-shrink: 0;
+          opacity: 0.75;
         }
 
         /* ── Print: hide everything, show only print zone ── */
@@ -226,8 +256,8 @@ export default function ImprimerCartesPage() {
             left: 0;
             width: 100%;
           }
-          .carte-grid {
-            gap: 4mm;
+          .loyalty-card {
+            box-shadow: none;
           }
         }
       `}} />
@@ -347,7 +377,7 @@ export default function ImprimerCartesPage() {
         {/* Preview label */}
         {!loading && cartes.length > 0 && (
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-widest mb-4">
-            Aperçu · Format 85 × 52 mm · cliquer pour sélectionner
+            Aperçu · Format 85.6 × 54 mm (ISO ID-1) · cliquer pour sélectionner
           </p>
         )}
       </div>
@@ -396,8 +426,11 @@ export default function ImprimerCartesPage() {
 
                 {/* Footer */}
                 <div className="loyalty-card__footer">
-                  <span className="loyalty-card__code-label">N° carte</span>
-                  <span className="loyalty-card__code">{formatCode(c.codeQR)}</span>
+                  <div className="loyalty-card__code-block">
+                    <span className="loyalty-card__code-label">N° carte</span>
+                    <span className="loyalty-card__code">{formatCode(c.codeQR)}</span>
+                  </div>
+                  <div className="loyalty-card__chip" aria-hidden="true" />
                 </div>
               </div>
             ))}
@@ -430,10 +463,11 @@ export default function ImprimerCartesPage() {
                   </div>
                 </div>
                 <div className="loyalty-card__footer">
-                  <span className="loyalty-card__code">{c.codeQR.slice(0, 22)}…</span>
-                  <div className="loyalty-card__dots">
-                    <div className="loyalty-card__dot" /><div className="loyalty-card__dot" /><div className="loyalty-card__dot" />
+                  <div className="loyalty-card__code-block">
+                    <span className="loyalty-card__code-label">N° carte</span>
+                    <span className="loyalty-card__code">{formatCode(c.codeQR)}</span>
                   </div>
+                  <div className="loyalty-card__chip" aria-hidden="true" />
                 </div>
               </div>
             ))}
