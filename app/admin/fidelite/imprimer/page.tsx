@@ -100,51 +100,32 @@ export default function ImprimerCartesPage() {
     });
   };
 
-  // ── PDF generation — clone hors transform pour capture propre ────────────
+  // ── PDF — génération 100% programmatique via @react-pdf/renderer ──────────
+  // Aucune capture DOM → aucun risque d'inclure l'entête admin ou la navigation.
   const handleDownloadPDF = async () => {
     if (printCartes.length === 0) return;
     setDownloading(true);
     setError(null);
     try {
-      const html2canvas = (await import("html2canvas")).default;
-      const { jsPDF }   = await import("jspdf");
+      const { pdf }          = await import("@react-pdf/renderer");
+      const { CartesPDFDoc } = await import("./CartesPDFDoc");
+      const React            = (await import("react")).default;
 
-      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const blob = await pdf(
+        React.createElement(CartesPDFDoc, { pages }) as any
+      ).toBlob();
 
-      for (let i = 0; i < pagesRef.current.length; i++) {
-        const el = pagesRef.current[i];
-        if (!el) continue;
-
-        // Clone l'élément A4 directement dans <body>, sans aucun parent transformé.
-        // html2canvas échoue à localiser correctement les éléments à l'intérieur
-        // d'un parent avec transform: scale() — le clone évite ce problème.
-        const clone = el.cloneNode(true) as HTMLElement;
-        clone.style.position  = "fixed";
-        clone.style.top       = "0";
-        clone.style.left      = "0";
-        clone.style.zIndex    = "-9999";
-        clone.style.width     = `${el.offsetWidth}px`;
-        clone.style.height    = `${el.offsetHeight}px`;
-        clone.style.transform = "none";
-        document.body.appendChild(clone);
-
-        const canvas = await html2canvas(clone, {
-          scale:           2,
-          useCORS:         true,
-          backgroundColor: "#ffffff",
-          logging:         false,
-          width:           el.offsetWidth,
-          height:          el.offsetHeight,
-        });
-
-        document.body.removeChild(clone);
-
-        if (i > 0) pdf.addPage("a4", "portrait");
-        pdf.addImage(canvas.toDataURL("image/jpeg", 0.93), "JPEG", 0, 0, 210, 297);
-      }
-
-      pdf.save(`cartes-fidelite-${new Date().toISOString().slice(0, 10)}.pdf`);
-    } catch {
+      const url = URL.createObjectURL(blob);
+      const a   = document.createElement("a");
+      a.href     = url;
+      a.download = `cartes-fidelite-${new Date().toISOString().slice(0, 10)}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
       setError("Erreur lors de la génération du PDF. Réessayez.");
     } finally {
       setDownloading(false);
