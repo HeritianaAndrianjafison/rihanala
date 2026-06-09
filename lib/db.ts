@@ -1,9 +1,8 @@
-import { neonConfig } from "@neondatabase/serverless";
-import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaNeonHttp } from "@prisma/adapter-neon";
 import { PrismaClient } from "@prisma/client";
-import ws from "ws";
 
-neonConfig.webSocketConstructor = ws;
+// HTTP transport — no WebSocket, no `ws` dependency.
+// Recommended for Vercel serverless functions (short-lived, stateless).
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
@@ -12,7 +11,7 @@ const globalForPrisma = globalThis as unknown as {
 function createClient(): PrismaClient {
   const url = process.env.DATABASE_URL;
   if (!url) throw new Error("DATABASE_URL is not set");
-  const adapter = new PrismaNeon({ connectionString: url });
+  const adapter = new PrismaNeonHttp(url, { fullResults: true });
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
