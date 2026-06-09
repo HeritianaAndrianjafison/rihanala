@@ -91,7 +91,7 @@ export default async function ArticleDetailPage({ params }: ArticleDetailPagePro
           {/* Tags */}
           {a.tags.length > 0 && (
             <div className="flex flex-wrap gap-2 mb-4">
-              {a.tags.map((tag) => (
+              {a.tags.map((tag: string) => (
                 <span
                   key={tag}
                   className="inline-flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-primary/60 bg-primary/6 px-3 py-1 rounded-full"
