@@ -1,9 +1,8 @@
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { Plus, Edit2, Eye, EyeOff } from "lucide-react";
-import type { HebergementType } from "@/types";
 
-const TYPE_LABELS: Record<HebergementType, string> = {
+const TYPE_LABELS: Record<string, string> = {
   CHAMBRE_DOUBLE:   "Chambre Double",
   CHAMBRE_FAMILIALE:"Chambre Familiale",
   SUITE:            "Suite",

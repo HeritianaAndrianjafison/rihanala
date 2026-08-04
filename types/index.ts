@@ -48,7 +48,7 @@ export interface IEquipement {
 export interface IHebergement {
   id: string;
   slug: string;
-  type: HebergementType;
+  type: string;
   nom: string;
   nomEn: string;
   description: string;

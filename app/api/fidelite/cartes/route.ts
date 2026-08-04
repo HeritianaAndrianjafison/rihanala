@@ -24,6 +24,7 @@ export async function GET() {
     const cartes = await prisma.carteQR.findMany({
       where:   { estActif: true, clientId: null },
       orderBy: { createdAt: "desc" },
+      include: { lot: true },
     });
     return NextResponse.json(cartes);
   } catch (err) {

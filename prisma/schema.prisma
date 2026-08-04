@@ -11,7 +11,7 @@ datasource db {
 model Hebergement {
   id            String          @id @default(cuid())
   slug          String          @unique
-  type          HebergementType
+  type          String
   nom           String
   nomEn         String
   description   String          @db.Text
@@ -35,11 +35,14 @@ model Hebergement {
   @@map("hebergements")
 }
 
-enum HebergementType {
-  CHAMBRE_DOUBLE
-  CHAMBRE_FAMILIALE
-  SUITE
-  DORTOIR
+model TypeHebergement {
+  id        String   @id @default(cuid())
+  valeur    String   @unique
+  label     String
+  ordre     Int      @default(0)
+  createdAt DateTime @default(now())
+
+  @@map("types_hebergement")
 }
 
 model Equipement {
@@ -247,6 +250,7 @@ model VerificationToken {
 model HotelAHF {
   id               String   @id @default(cuid())
   slug             String   @unique
+  numeroAHF        String?  @unique
   nom              String
   description      String   @db.Text
   adresse          String?
@@ -269,6 +273,21 @@ model HotelAHF {
   @@map("hotels_ahf")
 }
 
+// ─── GALERIE AHF ──────────────────────────────────────────────────────────────
+
+model GalerieAHF {
+  id        String   @id @default(cuid())
+  url       String
+  alt       String   @default("")
+  label     String   @default("")
+  ordre     Int      @default(0)
+  estActif  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([estActif, ordre])
+  @@map("galerie_ahf")
+}
+
 // ─── CARTES DE RÉDUCTION ──────────────────────────────────────────────────────
 
 model CarteReduction {
@@ -280,6 +299,8 @@ model CarteReduction {
   montantOriginal Float?
   montantFinal    Float?
   note            String?
+  dateDebut       DateTime?
+  dateFin         DateTime?
   createdAt       DateTime  @default(now())
 
   @@index([code])
@@ -334,6 +355,28 @@ model ClientFidelite {
   @@map("clients_fidelite")
 }
 
+model LotFidelite {
+  id               String   @id @default(cuid())
+  nom              String
+  description      String?
+  dateDebut        DateTime
+  dateFin          DateTime
+  pointsDepart     Int      @default(0)
+  valeurPoint      Float
+  seuilConversion  Int
+  valeurRecompense Float
+  couleur          String   @default("#1B4D3E")
+  couleurTexte     String   @default("#FFFFFF")
+  estActif         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  cartes CarteQR[]
+
+  @@index([estActif])
+  @@map("lots_fidelite")
+}
+
 model CarteQR {
   id        String          @id @default(cuid())
   codeQR    String          @unique @default(cuid())
@@ -342,8 +385,11 @@ model CarteQR {
 
   clientId  String?
   client    ClientFidelite? @relation(fields: [clientId], references: [id])
+  lotId     String?
+  lot       LotFidelite?    @relation(fields: [lotId], references: [id])
 
   @@index([codeQR])
+  @@index([lotId])
   @@map("cartes_qr")
 }
 

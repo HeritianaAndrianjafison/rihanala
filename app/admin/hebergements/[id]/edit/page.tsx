@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
 import { prisma } from "@/lib/db";
 import HebergementForm from "@/components/admin/HebergementForm";
+import type { HebergementType } from "@/types";
 
 interface EditHebergementPageProps {
   params: Promise<{ id: string }>;
@@ -47,7 +48,7 @@ export default async function EditHebergementPage({ params }: EditHebergementPag
           defaultValues={{
             nom:           hebergement.nom,
             nomEn:         hebergement.nomEn,
-            type:          hebergement.type,
+            type:          hebergement.type as HebergementType,
             description:   hebergement.description,
             descriptionEn: hebergement.descriptionEn,
             capacite:      hebergement.capacite,
