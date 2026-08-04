@@ -24,7 +24,6 @@ const NAV_LINKS: NavLink[] = [
   { key: "galerie",      anchor: "#galerie",       page: "/galerie" },
   { key: "avis",         anchor: "#temoignages",   page: "/" },
   { key: "actualites",   anchor: "#actualites",    page: "/actualites" },
-  { key: "ahf",          anchor: "",                page: "/ahf" },
   { key: "contact",      anchor: "#contact",       page: "/contact" },
 ];
 
