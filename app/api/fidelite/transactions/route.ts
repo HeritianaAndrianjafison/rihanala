@@ -24,7 +24,9 @@ export async function POST(req: Request) {
       parsed.data.note
     );
     return NextResponse.json(result, { status: 201 });
-  } catch {
-    return NextResponse.json({ error: "Erreur lors de l'enregistrement" }, { status: 500 });
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : String(err);
+    console.error("[fidelite/transactions POST]", detail);
+    return NextResponse.json({ error: "Erreur lors de l'enregistrement", detail }, { status: 500 });
   }
 }
