@@ -15,7 +15,7 @@ function createClient(): PrismaClient {
   if (!url) throw new Error("DATABASE_URL / DIRECT_URL is not set");
   // Strip pgbouncer=true — it's meaningless (and potentially breaking) for the HTTP transport.
   const cleanUrl = url.replace(/[&?]pgbouncer=true/gi, "").replace(/\?$/, "");
-  const adapter = new PrismaNeonHttp(cleanUrl);
+  const adapter = new PrismaNeonHttp(cleanUrl, {});
   return new PrismaClient({
     adapter,
     log: process.env.NODE_ENV === "development" ? ["error", "warn"] : ["error"],
