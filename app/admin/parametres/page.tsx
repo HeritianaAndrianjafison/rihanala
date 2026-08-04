@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/db";
 import ParametresForm from "@/components/admin/ParametresForm";
+import ChangerMotDePasseForm from "@/components/admin/ChangerMotDePasseForm";
 
 async function getParametres() {
   try {
@@ -20,6 +21,12 @@ export default async function AdminParametresPage() {
       </div>
       <div className="bg-white rounded-2xl p-8 shadow-sm">
         <ParametresForm parametres={parametres} />
+      </div>
+
+      <div className="mt-8 bg-white rounded-2xl p-8 shadow-sm">
+        <h2 className="text-base font-semibold text-slate-800 mb-1">Sécurité</h2>
+        <p className="text-slate-400 text-sm mb-6">Modifier le mot de passe administrateur</p>
+        <ChangerMotDePasseForm />
       </div>
     </div>
   );
