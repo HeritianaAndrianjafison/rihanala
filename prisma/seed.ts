@@ -45,7 +45,9 @@ async function main() {
   });
 
   if (!existingAdmin) {
-    const motDePasse = await bcrypt.hash("RihanalaAdmin2024!", 12);
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    if (!adminPassword) throw new Error("ADMIN_PASSWORD env var is required for seeding");
+    const motDePasse = await bcrypt.hash(adminPassword, 12);
     await prisma.utilisateur.create({
       data: {
         email: "admin@rihanala-village.mg",

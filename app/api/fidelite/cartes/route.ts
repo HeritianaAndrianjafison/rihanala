@@ -26,7 +26,8 @@ export async function GET() {
       orderBy: { createdAt: "desc" },
     });
     return NextResponse.json(cartes);
-  } catch {
-    return NextResponse.json({ error: "DB unavailable" }, { status: 503 });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return NextResponse.json({ error: "DB unavailable", detail: msg }, { status: 503 });
   }
 }
