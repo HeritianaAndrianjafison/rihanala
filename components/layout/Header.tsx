@@ -64,8 +64,8 @@ export default function Header({ locale }: HeaderProps) {
             <Image
               src="/logo.png"
               alt="Rihanala Village"
-              width={44}
-              height={44}
+              width={64}
+              height={64}
               className="shrink-0 object-contain"
             />
             <div>
