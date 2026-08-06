@@ -1,5 +1,4 @@
 import { notFound } from "next/navigation";
-import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 import { Users, Maximize2, ArrowLeft, MessageCircle } from "lucide-react";
@@ -7,6 +6,7 @@ import { prisma } from "@/lib/db";
 import { generatePageMetadata } from "@/lib/seo";
 import { JsonLd, getRoomJsonLd } from "@/components/seo/JsonLd";
 import FloatingWhatsApp from "@/components/nextgen/FloatingWhatsApp";
+import GalleryLightbox from "@/components/nextgen/GalleryLightbox";
 import type { Locale } from "@/types";
 
 interface HebergementDetailPageProps {
@@ -132,90 +132,22 @@ export default async function HebergementDetailPage({ params }: HebergementDetai
           </Link>
         </div>
 
-        {/* Hero photo */}
+        {/* Hero photo + lightbox */}
         <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-6">
-
-          {/* Mobile : photo principale + bande de miniatures */}
-          <div className="lg:hidden">
-            <div className="relative w-full h-60 sm:h-80 rounded-2xl overflow-hidden bg-slate-200">
-              {coverPhoto ? (
-                <Image
-                  src={coverPhoto.url}
-                  alt={locale === "en" ? coverPhoto.altEn : coverPhoto.altFr}
-                  fill
-                  className="object-cover"
-                  sizes="100vw"
-                  priority
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
-                  {locale === "en" ? "No photo yet" : "Pas encore de photo"}
-                </div>
-              )}
-            </div>
-            {galleryPhotos.length > 0 && (
-              <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
-                {galleryPhotos.slice(0, 6).map((p, i) => (
-                  <div key={p.id} className="relative w-24 h-16 shrink-0 rounded-xl overflow-hidden bg-slate-200">
-                    <Image
-                      src={p.url}
-                      alt={locale === "en" ? p.altEn : p.altFr}
-                      fill
-                      className="object-cover"
-                      sizes="96px"
-                    />
-                    {i === 5 && h.photos.length > 7 && (
-                      <div className="absolute inset-0 bg-black/45 flex items-center justify-center">
-                        <span className="text-white font-semibold text-sm">+{h.photos.length - 7}</span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Desktop : grille 5 colonnes */}
-          <div className="hidden lg:grid grid-cols-5 gap-3 rounded-2xl overflow-hidden h-[420px]">
-            <div className="col-span-3 relative bg-slate-200">
-              {coverPhoto ? (
-                <Image
-                  src={coverPhoto.url}
-                  alt={locale === "en" ? coverPhoto.altEn : coverPhoto.altFr}
-                  fill
-                  className="object-cover"
-                  sizes="60vw"
-                  priority
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
-                  {locale === "en" ? "No photo yet" : "Pas encore de photo"}
-                </div>
-              )}
-            </div>
-            <div className="col-span-2 grid grid-cols-2 gap-3">
-              {galleryPhotos.slice(0, 4).map((p, i) => (
-                <div key={p.id} className="relative bg-slate-200">
-                  <Image
-                    src={p.url}
-                    alt={locale === "en" ? p.altEn : p.altFr}
-                    fill
-                    className="object-cover"
-                    sizes="20vw"
-                  />
-                  {i === 3 && h.photos.length > 5 && (
-                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <span className="text-white font-semibold text-lg">+{h.photos.length - 5}</span>
-                    </div>
-                  )}
-                </div>
-              ))}
-              {Array.from({ length: Math.max(0, 4 - galleryPhotos.length) }).map((_, i) => (
-                <div key={`empty-${i}`} className="bg-slate-100" />
-              ))}
-            </div>
-          </div>
-
+          <GalleryLightbox
+            coverPhoto={coverPhoto ? {
+              id: coverPhoto.id,
+              url: coverPhoto.url,
+              alt: locale === "en" ? coverPhoto.altEn : coverPhoto.altFr,
+            } : null}
+            galleryPhotos={galleryPhotos.map((p) => ({
+              id: p.id,
+              url: p.url,
+              alt: locale === "en" ? p.altEn : p.altFr,
+            }))}
+            totalCount={h.photos.length}
+            locale={locale}
+          />
         </div>
 
         {/* Contenu */}
