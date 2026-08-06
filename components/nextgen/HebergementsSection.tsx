@@ -1,8 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import Image from "next/image";
+import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
 import { Users, Wind, Tv, Bath, Home, UtensilsCrossed, ChefHat, Star, ArrowRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -48,6 +49,7 @@ const stagger: Variants = {
 
 export default function HebergementsSection({ hebergements }: HebergementsSectionProps) {
   const t = useTranslations("hebergements");
+  const locale = useLocale();
   const [activeFilter, setActiveFilter] = useState<string | null>(null);
 
   const filtered = activeFilter
@@ -192,7 +194,8 @@ export default function HebergementsSection({ hebergements }: HebergementsSectio
                   ))}
                 </div>
 
-                <button
+                <Link
+                  href={`/${locale}/hebergements/${h.slug}`}
                   className={cn(
                     "w-full text-sm font-semibold py-3 rounded-xl transition-all duration-300 cursor-pointer flex items-center justify-center gap-2",
                     h.estEnVedette
@@ -203,7 +206,7 @@ export default function HebergementsSection({ hebergements }: HebergementsSectio
                 >
                   {t("voir_details")}
                   <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                </button>
+                </Link>
               </div>
             </motion.div>
           ))}

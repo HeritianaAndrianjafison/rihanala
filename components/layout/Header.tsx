@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useTranslations, useLocale } from "next-intl";
 import { usePathname } from "next/navigation";
 import { Menu, Trophy } from "lucide-react";
@@ -60,11 +61,13 @@ export default function Header({ locale }: HeaderProps) {
             className="flex items-center gap-3 group"
             aria-label="Rihanala Village — Accueil"
           >
-            <div className="w-9 h-9 rounded-full bg-gold flex items-center justify-center shrink-0">
-              <span className="font-display font-bold text-dark text-base leading-none select-none">
-                R
-              </span>
-            </div>
+            <Image
+              src="/logo.png"
+              alt="Rihanala Village"
+              width={44}
+              height={44}
+              className="shrink-0 object-contain"
+            />
             <div>
               <div className="text-white font-display font-semibold text-[1.1rem] leading-none tracking-wide">
                 Rihanala Village
