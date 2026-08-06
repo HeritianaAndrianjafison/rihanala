@@ -50,14 +50,14 @@ export default function HeroSection({ imageUrl }: HeroSectionProps) {
           </div>
 
           {/* Titre H1 */}
-          <h1 className="font-display text-[2.4rem] sm:text-5xl md:text-6xl lg:text-7xl font-light text-white leading-[1.08] mb-4 au2" style={{ textShadow: "0 2px 24px rgba(0,0,0,.45)" }}>
+          <h1 className="font-display text-[2.4rem] sm:text-5xl md:text-6xl lg:text-7xl font-light text-white leading-[1.08] mb-4 au2" style={{ textShadow: "0 2px 32px rgba(0,0,0,.70), 0 1px 6px rgba(0,0,0,.55)" }}>
             {t("title_1")}<br />
             <em className="font-semibold not-italic text-gold">{t("title_2")}</em><br />
             {t("title_3")}
           </h1>
 
           {/* Sous-titre */}
-          <p className="text-white/90 text-base sm:text-lg leading-relaxed mb-7 max-w-lg au3" style={{ textShadow: "0 1px 12px rgba(0,0,0,.5)" }}>
+          <p className="text-white/95 text-base sm:text-lg leading-relaxed mb-7 max-w-lg au3" style={{ textShadow: "0 1px 16px rgba(0,0,0,.70)" }}>
             {t("subtitle")}
           </p>
 
