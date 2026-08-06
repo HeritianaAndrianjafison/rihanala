@@ -3,20 +3,9 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
-  LayoutDashboard,
-  Bed,
-  Newspaper,
-  ImageIcon,
-  MessageSquare,
-  Settings,
-  LogOut,
-  Tag,
-  ChevronRight,
-  CalendarCheck,
-  Building2,
-  Images,
-  Trophy,
-  Ticket,
+  LayoutDashboard, Bed, Newspaper, ImageIcon, MessageSquare,
+  Settings, LogOut, Tag, ChevronRight, CalendarCheck,
+  Building2, Images, Trophy, Ticket, X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { signOut } from "next-auth/react";
@@ -30,27 +19,32 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   { href: "/admin",              label: "Dashboard",     Icon: LayoutDashboard, exact: true },
-  { href: "/admin/hebergements",  label: "Hébergements",  Icon: Bed },
-  { href: "/admin/actualites",    label: "Actualités",    Icon: Newspaper },
-  { href: "/admin/reservations",  label: "Réservations",  Icon: CalendarCheck },
+  { href: "/admin/hebergements", label: "Hébergements",  Icon: Bed },
+  { href: "/admin/actualites",   label: "Actualités",    Icon: Newspaper },
+  { href: "/admin/reservations", label: "Réservations",  Icon: CalendarCheck },
   { href: "/admin/medias",       label: "Médias",        Icon: Images },
   { href: "/admin/galerie",      label: "Galerie",       Icon: ImageIcon },
   { href: "/admin/avis",         label: "Avis clients",  Icon: MessageSquare },
-  { href: "/admin/ahf",          label: "Hôtels AHF",    Icon: Building2 },
+  { href: "/admin/ahf",          label: "Hôtels AHF",   Icon: Building2 },
   { href: "/admin/offres",       label: "Offres",        Icon: Tag },
   { href: "/admin/fidelite",     label: "Fidélité",      Icon: Trophy },
   { href: "/admin/reductions",   label: "Réductions",    Icon: Ticket },
   { href: "/admin/parametres",   label: "Paramètres",    Icon: Settings },
 ];
 
-export default function Sidebar() {
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+function SidebarContent({ onClose }: { onClose?: () => void }) {
   const pathname = usePathname();
 
   return (
-    <aside className="w-64 bg-dark text-white flex flex-col h-screen sticky top-0 shrink-0">
+    <aside className="w-64 bg-dark text-white flex flex-col h-full">
       {/* Brand */}
-      <div className="px-6 py-6 border-b border-white/8">
-        <Link href="/admin" className="flex items-center gap-3">
+      <div className="px-6 py-5 border-b border-white/8 flex items-center justify-between">
+        <Link href="/admin" className="flex items-center gap-3" onClick={onClose}>
           <div className="w-9 h-9 rounded-full bg-gold flex items-center justify-center shrink-0">
             <span className="font-display font-bold text-dark text-base leading-none select-none">R</span>
           </div>
@@ -59,6 +53,11 @@ export default function Sidebar() {
             <div className="text-gold text-[9px] tracking-widest uppercase mt-0.5">Back-office</div>
           </div>
         </Link>
+        {onClose && (
+          <button onClick={onClose} className="lg:hidden text-white/50 hover:text-white cursor-pointer p-1" aria-label="Fermer le menu">
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
 
       {/* Navigation */}
@@ -69,6 +68,7 @@ export default function Sidebar() {
             <Link
               key={href}
               href={href}
+              onClick={onClose}
               className={cn(
                 "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors duration-150",
                 isActive
@@ -95,5 +95,32 @@ export default function Sidebar() {
         </button>
       </div>
     </aside>
+  );
+}
+
+export default function Sidebar({ mobileOpen = false, onClose }: SidebarProps) {
+  return (
+    <>
+      {/* Desktop — sidebar fixe */}
+      <div className="hidden lg:flex h-screen sticky top-0 shrink-0">
+        <SidebarContent />
+      </div>
+
+      {/* Mobile — drawer avec overlay */}
+      {mobileOpen && (
+        <>
+          {/* Overlay */}
+          <div
+            className="fixed inset-0 z-40 bg-black/60 lg:hidden"
+            onClick={onClose}
+            aria-hidden="true"
+          />
+          {/* Drawer */}
+          <div className="fixed inset-y-0 left-0 z-50 lg:hidden h-full overflow-y-auto shadow-2xl">
+            <SidebarContent onClose={onClose} />
+          </div>
+        </>
+      )}
+    </>
   );
 }

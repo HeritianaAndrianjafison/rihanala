@@ -117,6 +117,24 @@ model Actualite {
   @@map("actualites")
 }
 
+// ─── DEMANDES DE CONTACT (formulaire site public) ────────────────────────────
+
+model DemandeContact {
+  id              String   @id @default(cuid())
+  prenom          String
+  nom             String
+  email           String
+  telephone       String?
+  typeHebergement String?
+  nbPersonnes     Int?
+  message         String?  @db.Text
+  statut          String   @default("NOUVELLE")
+  createdAt       DateTime @default(now())
+
+  @@index([statut, createdAt])
+  @@map("demandes_contact")
+}
+
 // ─── RÉSERVATIONS ─────────────────────────────────────────────────────────────
 
 model Reservation {
