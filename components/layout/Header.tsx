@@ -62,11 +62,11 @@ export default function Header({ locale }: HeaderProps) {
             aria-label="Rihanala Village — Accueil"
           >
             <Image
-              src="/logo.png"
+              src="/logo_rihanala.png"
               alt="Rihanala Village"
-              width={64}
-              height={64}
-              className="shrink-0 object-contain"
+              width={90}
+              height={90}
+              className="shrink-0 object-contain rounded-lg"
             />
             <div>
               <div className="text-white font-display font-semibold text-[1.1rem] leading-none tracking-wide">
