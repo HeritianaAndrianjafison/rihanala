@@ -1,5 +1,6 @@
 import { useTranslations } from "next-intl";
 import type { IAvis } from "@/types";
+import AvisForm from "./AvisForm";
 
 interface TemoignagesSectionProps {
   avis: IAvis[];
@@ -75,7 +76,7 @@ export default function TemoignagesSection({ avis }: TemoignagesSectionProps) {
           ))}
         </div>
 
-        <p className="text-center text-white/25 text-xs mt-8">{t("disclaimer")}</p>
+        <AvisForm />
       </div>
     </section>
   );
