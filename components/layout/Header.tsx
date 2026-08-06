@@ -68,7 +68,7 @@ export default function Header({ locale }: HeaderProps) {
               height={90}
               className="shrink-0 object-contain rounded-lg"
             />
-            <div>
+            <div className="hidden lg:block">
               <div className="text-white font-display font-semibold text-[1.1rem] leading-none tracking-wide">
                 Rihanala Village
               </div>
