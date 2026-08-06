@@ -12,7 +12,7 @@ export default function HeroSection({ imageUrl }: HeroSectionProps) {
   const t = useTranslations("hero");
 
   return (
-    <section className="relative min-h-screen flex items-end pb-24 overflow-hidden">
+    <section className="relative min-h-screen flex items-end pb-28 sm:pb-24 overflow-hidden">
       {/* Image de fond — lumineuse, couleurs vives */}
       <Image
         src={imageUrl || HERO_FALLBACK}
@@ -50,23 +50,23 @@ export default function HeroSection({ imageUrl }: HeroSectionProps) {
           </div>
 
           {/* Titre H1 */}
-          <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-light text-white leading-[1.05] mb-5 au2" style={{ textShadow: "0 2px 24px rgba(0,0,0,.45)" }}>
+          <h1 className="font-display text-[2.4rem] sm:text-5xl md:text-6xl lg:text-7xl font-light text-white leading-[1.08] mb-4 au2" style={{ textShadow: "0 2px 24px rgba(0,0,0,.45)" }}>
             {t("title_1")}<br />
             <em className="font-semibold not-italic text-gold">{t("title_2")}</em><br />
             {t("title_3")}
           </h1>
 
           {/* Sous-titre */}
-          <p className="text-white/90 text-lg leading-relaxed mb-9 max-w-lg au3" style={{ textShadow: "0 1px 12px rgba(0,0,0,.5)" }}>
+          <p className="text-white/90 text-base sm:text-lg leading-relaxed mb-7 max-w-lg au3" style={{ textShadow: "0 1px 12px rgba(0,0,0,.5)" }}>
             {t("subtitle")}
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-wrap gap-3 au4">
+          <div className="flex flex-col sm:flex-row gap-3 au4">
             <a
               href="#hebergements"
-              className="group bg-gold text-dark font-semibold px-7 py-4 rounded-full flex items-center gap-2 hover:bg-gold-d transition-colors duration-200 cursor-pointer"
-              style={{ minHeight: "52px" }}
+              className="group bg-gold text-dark font-semibold px-7 py-3.5 rounded-full flex items-center justify-center gap-2 hover:bg-gold-d transition-colors duration-200 cursor-pointer"
+              style={{ minHeight: "50px" }}
             >
               {t("cta_primary")}
               <ArrowRight
@@ -76,8 +76,8 @@ export default function HeroSection({ imageUrl }: HeroSectionProps) {
             </a>
             <a
               href="#contact"
-              className="hero-glass-btn text-white font-medium px-7 py-4 rounded-full cursor-pointer"
-              style={{ minHeight: "52px", display: "flex", alignItems: "center" }}
+              className="hero-glass-btn text-white font-medium px-7 py-3.5 rounded-full cursor-pointer flex items-center justify-center"
+              style={{ minHeight: "50px" }}
             >
               {t("cta_secondary")}
             </a>
@@ -101,27 +101,28 @@ export default function HeroSection({ imageUrl }: HeroSectionProps) {
 
       {/* Quick info strip */}
       <div className="hero-strip-glass absolute bottom-0 left-0 right-0">
-        <div className="max-w-7xl mx-auto px-5 md:px-10 py-4 flex flex-wrap items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-5 md:px-10 py-3 flex items-center justify-between gap-3">
 
-          <div className="flex items-center gap-2.5 text-white">
+          {/* Mobile : localisation + bouton appel uniquement */}
+          <div className="flex items-center gap-2 text-white min-w-0">
             <MapPin className="w-4 h-4 text-gold shrink-0" aria-hidden="true" />
-            <span className="text-sm font-medium">{t("location")}</span>
+            <span className="text-sm font-medium truncate">{t("location")}</span>
           </div>
 
-          <div className="flex items-center gap-2.5 text-white">
+          <div className="hidden sm:flex items-center gap-2.5 text-white">
             <Phone className="w-4 h-4 text-gold shrink-0" aria-hidden="true" />
             <span className="text-sm font-medium">{t("phone_label")}</span>
           </div>
 
-          <div className="flex items-center gap-2.5 text-white">
+          <div className="hidden md:flex items-center gap-2.5 text-white">
             <Calendar className="w-4 h-4 text-gold shrink-0" aria-hidden="true" />
             <span className="text-sm font-medium">{t("hours")}</span>
           </div>
 
           <a
             href="tel:+261346808466"
-            className="bg-gold text-dark text-sm font-bold px-5 py-2.5 rounded-full hover:bg-gold-d transition-colors duration-200 cursor-pointer shrink-0"
-            style={{ minHeight: "44px", display: "flex", alignItems: "center" }}
+            className="bg-gold text-dark text-sm font-bold px-4 py-2.5 rounded-full hover:bg-gold-d transition-colors duration-200 cursor-pointer shrink-0 flex items-center"
+            style={{ minHeight: "40px" }}
           >
             {t("cta_call")}
           </a>
