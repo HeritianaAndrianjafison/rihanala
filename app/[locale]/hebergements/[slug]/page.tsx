@@ -133,16 +133,18 @@ export default async function HebergementDetailPage({ params }: HebergementDetai
         </div>
 
         {/* Hero photo */}
-        <div className="max-w-6xl mx-auto px-6 mt-6">
-          <div className="grid grid-cols-1 lg:grid-cols-5 gap-3 rounded-2xl overflow-hidden h-[420px]">
-            <div className="lg:col-span-3 relative bg-slate-200">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 mt-6">
+
+          {/* Mobile : photo principale + bande de miniatures */}
+          <div className="lg:hidden">
+            <div className="relative w-full h-60 sm:h-80 rounded-2xl overflow-hidden bg-slate-200">
               {coverPhoto ? (
                 <Image
                   src={coverPhoto.url}
                   alt={locale === "en" ? coverPhoto.altEn : coverPhoto.altFr}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 60vw"
+                  sizes="100vw"
                   priority
                 />
               ) : (
@@ -151,7 +153,47 @@ export default async function HebergementDetailPage({ params }: HebergementDetai
                 </div>
               )}
             </div>
-            <div className="hidden lg:grid lg:col-span-2 grid-cols-2 gap-3">
+            {galleryPhotos.length > 0 && (
+              <div className="flex gap-2 mt-2 overflow-x-auto pb-1">
+                {galleryPhotos.slice(0, 6).map((p, i) => (
+                  <div key={p.id} className="relative w-24 h-16 shrink-0 rounded-xl overflow-hidden bg-slate-200">
+                    <Image
+                      src={p.url}
+                      alt={locale === "en" ? p.altEn : p.altFr}
+                      fill
+                      className="object-cover"
+                      sizes="96px"
+                    />
+                    {i === 5 && h.photos.length > 7 && (
+                      <div className="absolute inset-0 bg-black/45 flex items-center justify-center">
+                        <span className="text-white font-semibold text-sm">+{h.photos.length - 7}</span>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Desktop : grille 5 colonnes */}
+          <div className="hidden lg:grid grid-cols-5 gap-3 rounded-2xl overflow-hidden h-[420px]">
+            <div className="col-span-3 relative bg-slate-200">
+              {coverPhoto ? (
+                <Image
+                  src={coverPhoto.url}
+                  alt={locale === "en" ? coverPhoto.altEn : coverPhoto.altFr}
+                  fill
+                  className="object-cover"
+                  sizes="60vw"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-slate-400 text-sm">
+                  {locale === "en" ? "No photo yet" : "Pas encore de photo"}
+                </div>
+              )}
+            </div>
+            <div className="col-span-2 grid grid-cols-2 gap-3">
               {galleryPhotos.slice(0, 4).map((p, i) => (
                 <div key={p.id} className="relative bg-slate-200">
                   <Image
@@ -163,9 +205,7 @@ export default async function HebergementDetailPage({ params }: HebergementDetai
                   />
                   {i === 3 && h.photos.length > 5 && (
                     <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                      <span className="text-white font-semibold text-lg">
-                        +{h.photos.length - 5}
-                      </span>
+                      <span className="text-white font-semibold text-lg">+{h.photos.length - 5}</span>
                     </div>
                   )}
                 </div>
@@ -175,6 +215,7 @@ export default async function HebergementDetailPage({ params }: HebergementDetai
               ))}
             </div>
           </div>
+
         </div>
 
         {/* Contenu */}
